@@ -1,13 +1,17 @@
 import { Router, Request, Response, NextFunction } from "express";
-import passport from "passport";
+import passport from "../config/passport"; // Import dari config
 import { oauthCallback } from "../controllers/auth.controller";
 import { IUser } from "../types/Users.Types";
 
 const router = Router();
 
+// Google OAuth Routes
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    session: false, // Karena kita pakai JWT
+  })
 );
 
 router.get(
@@ -16,9 +20,26 @@ router.get(
     passport.authenticate(
       "google",
       { session: false },
-      (err: Error | null, user: IUser | false) => {
-        if (err || !user) {
-          return res.status(401).json({ message: "Unauthorized" });
+      (err: Error | null, user: IUser | false, info: any) => {
+        console.log("=== Google Callback ===");
+        console.log("Error:", err);
+        console.log("User:", user ? user._id : null);
+        console.log("Info:", info);
+
+        if (err) {
+          console.error("Google auth error:", err);
+          return res.redirect(
+            `${
+              process.env.FRONTEND_URL
+            }/auth/error?message=${encodeURIComponent(err.message)}`
+          );
+        }
+
+        if (!user) {
+          console.error("No user returned from Google auth");
+          return res.redirect(
+            `${process.env.FRONTEND_URL}/auth/error?message=Authentication failed`
+          );
         }
 
         req.user = user;
@@ -29,9 +50,13 @@ router.get(
   oauthCallback
 );
 
+// GitHub OAuth Routes
 router.get(
   "/github",
-  passport.authenticate("github", { scope: ["user:email"] })
+  passport.authenticate("github", {
+    scope: ["user:email"],
+    session: false,
+  })
 );
 
 router.get(
@@ -40,21 +65,27 @@ router.get(
     passport.authenticate(
       "github",
       { session: false },
-      (err: Error | null, user: IUser | false) => {
-        // Tambahkan logging
-        console.log("Auth Error:", err);
-        console.log("User:", user);
+      (err: Error | null, user: IUser | false, info: any) => {
+        console.log("=== GitHub Callback ===");
+        console.log("Error:", err);
+        console.log("User:", user ? (user as any)._id : null);
+        console.log("Info:", info);
         console.log("Query:", req.query);
 
-        if (err || !user) {
-          return res.status(401).json({
-            message: "Unauthorized",
-            error: err?.message,
-            debug:
-              process.env.NODE_ENV === "development"
-                ? { err, user }
-                : undefined,
-          });
+        if (err) {
+          console.error("GitHub auth error:", err);
+          return res.redirect(
+            `${
+              process.env.FRONTEND_URL
+            }/auth/error?message=${encodeURIComponent(err.message)}`
+          );
+        }
+
+        if (!user) {
+          console.error("No user returned from GitHub auth");
+          return res.redirect(
+            `${process.env.FRONTEND_URL}/auth/error?message=Authentication failed`
+          );
         }
 
         req.user = user;
