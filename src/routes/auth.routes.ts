@@ -1,6 +1,7 @@
-import { Router } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import passport from "passport";
 import { oauthCallback } from "../controllers/auth.controller";
+import { IUser } from "../types/Users.Types";
 
 const router = Router();
 
@@ -11,7 +12,20 @@ router.get(
 
 router.get(
   "/google/callback",
-  passport.authenticate("google", { session: false }),
+  (req: Request, res: Response, next: NextFunction) => {
+    passport.authenticate(
+      "google",
+      { session: false },
+      (err: Error | null, user: IUser | false) => {
+        if (err || !user) {
+          return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        req.user = user;
+        next();
+      }
+    )(req, res, next);
+  },
   oauthCallback
 );
 
@@ -22,7 +36,20 @@ router.get(
 
 router.get(
   "/github/callback",
-  passport.authenticate("github", { session: false }),
+  (req: Request, res: Response, next: NextFunction) => {
+    passport.authenticate(
+      "github",
+      { session: false },
+      (err: Error | null, user: IUser | false) => {
+        if (err || !user) {
+          return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        req.user = user;
+        next();
+      }
+    )(req, res, next);
+  },
   oauthCallback
 );
 
