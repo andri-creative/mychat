@@ -41,8 +41,20 @@ router.get(
       "github",
       { session: false },
       (err: Error | null, user: IUser | false) => {
+        // Tambahkan logging
+        console.log("Auth Error:", err);
+        console.log("User:", user);
+        console.log("Query:", req.query);
+
         if (err || !user) {
-          return res.status(401).json({ message: "Unauthorized" });
+          return res.status(401).json({
+            message: "Unauthorized",
+            error: err?.message,
+            debug:
+              process.env.NODE_ENV === "development"
+                ? { err, user }
+                : undefined,
+          });
         }
 
         req.user = user;

@@ -64,27 +64,35 @@ passport.use(
       profile: GitHubProfile,
       done: VerifyCallback
     ) => {
-      const email = profile.emails?.[0].value;
-      if (!email) return done(null, false);
+      try {
+        const email = profile.emails?.[0].value;
 
-      let user = await User.findOne({
-        provider: "github",
-        providerId: profile.id,
-      });
+        if (!email) {
+          console.error("No email from GitHub profile");
+          return done(null, false);
+        }
 
-      if (!user) {
-        user = await User.create({
-          name: profile.username || "Github User",
-          email,
-          avatar: profile.photos?.[0].value,
+        let user = await User.findOne({
           provider: "github",
           providerId: profile.id,
         });
-      }
 
-      return done(null, user);
+        if (!user) {
+          user = await User.create({
+            name: profile.username || profile.displayName || "Github User",
+            email,
+            avatar: profile.photos?.[0].value,
+            provider: "github",
+            providerId: profile.id,
+          });
+        }
+
+        return done(null, user);
+      } catch (error) {
+        console.error("GitHub Strategy Error:", error);
+        return done(error as Error, false);
+      }
     }
   )
 );
-
 export default passport;
