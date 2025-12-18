@@ -21,10 +21,10 @@ router.get(
       "google",
       { session: false },
       (err: Error | null, user: IUser | false, info: any) => {
-        console.log("=== Google Callback ===");
-        console.log("Error:", err);
-        console.log("User:", user ? user._id : null);
-        console.log("Info:", info);
+        // console.log("=== Google Callback ===");
+        // console.log("Error:", err);
+        // console.log("User:", user ? user._id : null);
+        // console.log("Info:", info);
 
         if (err) {
           console.error("Google auth error:", err);
@@ -66,11 +66,11 @@ router.get(
       "github",
       { session: false },
       (err: Error | null, user: IUser | false, info: any) => {
-        console.log("=== GitHub Callback ===");
-        console.log("Error:", err);
-        console.log("User:", user ? (user as any)._id : null);
-        console.log("Info:", info);
-        console.log("Query:", req.query);
+        // console.log("=== GitHub Callback ===");
+        // console.log("Error:", err);
+        // console.log("User:", user ? (user as any)._id : null);
+        // console.log("Info:", info);
+        // console.log("Query:", req.query);
 
         if (err) {
           console.error("GitHub auth error:", err);
