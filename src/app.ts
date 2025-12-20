@@ -42,9 +42,14 @@ class App {
   routes(): void {
 
     this.app.get('/', (req, res) => {
-      res.json({
+      res.status(200).json({
         status: true,
-        message: "backend v1 ready",
+        message: "Backend v1 ready 🚀",
+        services: {
+          database: "MongoDB",
+          realtime: "Socket.IO",
+          auth: ["Google", "GitHub"],
+        }
       })
     })
 
