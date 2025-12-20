@@ -12,8 +12,6 @@ import {
 } from "passport-github2";
 import User from "../models/User.Models";
 import { VerifyCallback } from "passport-oauth2";
-import { IUser } from "../types/Users.Types";
-
 // Validate environment variables
 if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
   console.warn("Google OAuth credentials missing");
