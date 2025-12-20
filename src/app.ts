@@ -40,9 +40,19 @@ class App {
 
   // ⬇️ TANPA private
   routes(): void {
+
+    this.app.get('/', (req, res) => {
+      res.json({
+        status: true,
+        message: "backend v1 ready",
+      })
+    })
+
     this.app.get("/health", (req, res) => {
       res.json({ status: "OK", timestamp: new Date().toISOString() });
     });
+
+
 
     this.app.use("/api/auth", authRoutes);
 
