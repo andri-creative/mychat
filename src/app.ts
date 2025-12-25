@@ -21,7 +21,6 @@ class App {
     this.errorHandling();
   }
 
-  // ⬇️ TANPA private
   config(): void {
     this.app.use(helmet());
     this.app.use(
@@ -38,7 +37,6 @@ class App {
     this.app.use(passport.initialize());
   }
 
-  // ⬇️ TANPA private
   routes(): void {
 
     this.app.get('/', (req, res) => {
@@ -66,7 +64,6 @@ class App {
     });
   }
 
-  // ⬇️ TANPA private
   errorHandling(): void {
     this.app.use(errorHandler);
   }
